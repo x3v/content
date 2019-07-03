@@ -1,0 +1,209 @@
+category: Endpoint
+commonfields:
+  id: SymantecDLP
+  version: -1
+configuration:
+- display: Server Host (ip address or hostname) eg https://dlp-host:8443
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 2 months
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3     months,
+    1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Saved Report ID
+  name: saved-Report-id
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Integration to fetch and update symantec DLP Incidents
+display: Symantec DLP
+name: SymantecDLP
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: incident Id  from DLP console to fetch the data of
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    deprecated: false
+    description: fetches DLP incident details
+    execution: false
+    name: sdlp-incident-details
+    outputs:
+    - contextPath: SymantecDLP.Incident.incidentId
+      description: DLP incident ID
+      type: unknown
+    - contextPath: SymantecDLP.Incident.incidentCreationDate
+      description: DLP incident creation date
+      type: Unknown
+    - contextPath: SymantecDLP.Incident.detectionDate
+      description: incident detection date
+      type: Unknown
+    - contextPath: SymantecDLP.Incident.severity
+      description: incident severity
+      type: Unknown
+    - contextPath: SymantecDLP.Incident.status
+      description: incident status
+      type: Unknown
+    - contextPath: SymantecDLP.Incident.applicationName
+      description: application which triggered incident
+      type: Unknown
+    - contextPath: SymantecDLP.Incident.userName
+      description: user who triggered the incident
+      type: Unknown
+    - contextPath: SymantecDLP.Incident.machineName
+      description: target machine name
+      type: Unknown
+    - contextPath: SymantecDLP.Incident.machineName.machineIP
+      description: target machine Ip
+      type: Unknown
+  - arguments:
+    - default: false
+      description: incident Id from DLP console to fetch the data of
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: changes the severity of the Incident
+      isArray: false
+      name: severity
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFO
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'changes the status of the incident in DLP console NOTE:  status
+        attributes are defined in the DLP console. '
+      isArray: false
+      name: status
+      predefined:
+      - New
+      - Escalated
+      - Investigation
+      - Resolved
+      - Dissmissed
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates Symantec DLP incidents
+    execution: false
+    name: sdlp-update-incident
+  - arguments:
+    - default: false
+      description: incident Id from DLP console to fetch the data of
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: This  indicates whether the result include the original message
+        in the response document.
+      isArray: false
+      name: includeOriginalMessage
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: This  indicates whether the result include all message components
+        (for example, headers and file attachments) in the response document.
+      isArray: false
+      name: includeAllComponents
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    - default: false
+      description: This  indicates a specific message component ID to return in the
+        response document
+      isArray: false
+      name: componentId
+      required: false
+      secret: false
+    deprecated: false
+    description: retrieves additional components of the message that generated an
+      incident, such as the message header, body, and binary attachments.
+    execution: false
+    name: sdlp-incident-binaries
+    outputs:
+    - contextPath: binaries.componentId
+      description: component ID of the binay
+      type: Unknown
+    - contextPath: binaries.name
+      description: Name if the binary
+      type: Unknown
+  - arguments:
+    - default: false
+      description: incident Id from DLP console to fetch the data of
+      isArray: false
+      name: incidentLongId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: This  specifies whether image violations should be included in
+        the IncidentViolationsResponse
+      isArray: false
+      name: includeImageViolations
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    deprecated: false
+    description: returns the highlighted matches for an incident
+    execution: false
+    name: sdlp-incident-violations
+    outputs:
+    - contextPath: ViolationComponents.id
+      description: component ID of the violation
+      type: Unknown
+    - contextPath: ViolationComponents.name
+      description: component Name of the violation
+      type: Unknown
+  - deprecated: false
+    description: returns a list of the custom status values defined in the Symantec
+      Data Loss Prevention deployment.
+    execution: false
+    name: sdlp-list-incident-status
+  - deprecated: false
+    description: returns a list of all custom attribute names defined in the Symantec
+      Data Loss Prevention deployment.
+    execution: false
+    name: sdlp-list-custom-attributes
+  dockerimage: demisto/zeep:1.0.0.122
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
