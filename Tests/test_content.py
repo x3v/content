@@ -578,7 +578,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 def main():
     options = options_handler()
     server = options.server
-	print('AAAAA {}'.format(server))
+    print('AAAAA {}'.format(server))
     is_ami = options.isAMI
     server_version = options.serverVersion
     server_numeric_version = '0.0.0'
