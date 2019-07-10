@@ -163,7 +163,6 @@ def __create_incident_with_playbook(client, name, playbook_id):
     inc_id = response_json.get('id', 'incCreateErr')
     if inc_id == 'incCreateErr':
         print_error(INC_CREATION_ERR)
-        print_error(response_json)
         print_error(str(response_json))
         return False, -1
 
