@@ -578,8 +578,9 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 def main():
     options = options_handler()
     server = options.server
-    print('AAAAA {}'.format(server))
+    print('AAA Server {}'.format(server))
     is_ami = options.isAMI
+    print('AAA Is AMI {}'.format(is_ami))
     server_version = options.serverVersion
     server_numeric_version = '0.0.0'
 
@@ -614,8 +615,7 @@ def main():
         #     instance_ips = instance_file.readlines()
         #     instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
 
-        execute_testing(server, server_version, server_numeric_version,
-                        is_ami=False)
+        execute_testing(server, '', server_version, server_numeric_version, is_ami=False)
 
 
 if __name__ == '__main__':
