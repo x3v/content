@@ -8,7 +8,7 @@ import re
 import requests
 import argparse
 
-from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES
+# from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES
 from Tests.test_utils import print_error, print_warning, \
     run_command, server_version_compare, get_release_notes_file_path
 from Tests.scripts.validate_files import FilesValidator
