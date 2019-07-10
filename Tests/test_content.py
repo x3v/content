@@ -607,7 +607,7 @@ def main():
         #         print("Starts tests with server url - https://{}".format(ami_instance_ip))
         #         execute_testing(server, ami_instance_ip, server_version, server_numeric_version)
         #         sleep(8)
-		print('Should not get here')
+        print('Should not get here')
 
     else:  # Run tests in Server build configuration
         # with open('./Tests/instance_ips.txt', 'r') as instance_file:
