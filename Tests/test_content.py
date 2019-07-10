@@ -16,7 +16,6 @@ from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 
-SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
 FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
@@ -579,42 +578,43 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 def main():
     options = options_handler()
     server = options.server
+	print('AAAAA {}'.format(server))
     is_ami = options.isAMI
     server_version = options.serverVersion
     server_numeric_version = '0.0.0'
 
     if is_ami:  # Run tests in AMI configuration
-        with open('./Tests/images_data.txt', 'r') as image_data_file:
-            image_data = [line for line in image_data_file if line.startswith(server_version)]
-            if len(image_data) != 1:
-                print('Did not get one image data for server version, got {}'.format(image_data))
-            else:
-                server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
-                if server_numeric_version:
-                    server_numeric_version = server_numeric_version[0]
-                else:
-                    server_numeric_version = '99.99.98'  # latest
-                print('Server image info: {}'.format(image_data[0]))
-                print('Server version: {}'.format(server_numeric_version))
+        # with open('./Tests/images_data.txt', 'r') as image_data_file:
+        #     image_data = [line for line in image_data_file if line.startswith(server_version)]
+        #     if len(image_data) != 1:
+        #         print('Did not get one image data for server version, got {}'.format(image_data))
+        #     else:
+        #         server_numeric_version = re.findall('Demisto-Circle-CI-Content-[\w-]+-([\d.]+)-[\d]{5}', image_data[0])
+        #         if server_numeric_version:
+        #             server_numeric_version = server_numeric_version[0]
+        #         else:
+        #             server_numeric_version = '99.99.98'  # latest
+        #         print('Server image info: {}'.format(image_data[0]))
+        #         print('Server version: {}'.format(server_numeric_version))
 
-        with open('./Tests/instance_ips.txt', 'r') as instance_file:
-            instance_ips = instance_file.readlines()
-            instance_ips = [line.strip('\n').split(":") for line in instance_ips]
+        # with open('./Tests/instance_ips.txt', 'r') as instance_file:
+        #     instance_ips = instance_file.readlines()
+        #     instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-        for ami_instance_name, ami_instance_ip in instance_ips:
-            if ami_instance_name == server_version:
-                print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
-                print("Starts tests with server url - https://{}".format(ami_instance_ip))
-                server = SERVER_URL.format(ami_instance_ip)
-                execute_testing(server, ami_instance_ip, server_version, server_numeric_version)
-                sleep(8)
+        # for ami_instance_name, ami_instance_ip in instance_ips:
+        #     if ami_instance_name == server_version:
+        #         print_color("Starting tests for {}".format(ami_instance_name), LOG_COLORS.GREEN)
+        #         print("Starts tests with server url - https://{}".format(ami_instance_ip))
+        #         execute_testing(server, ami_instance_ip, server_version, server_numeric_version)
+        #         sleep(8)
+		print('Should not get here')
 
     else:  # Run tests in Server build configuration
-        with open('./Tests/instance_ips.txt', 'r') as instance_file:
-            instance_ips = instance_file.readlines()
-            instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
+        # with open('./Tests/instance_ips.txt', 'r') as instance_file:
+        #     instance_ips = instance_file.readlines()
+        #     instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
 
-        execute_testing(SERVER_URL.format(instance_ip), instance_ip, server_version, server_numeric_version,
+        execute_testing(server, server_version, server_numeric_version,
                         is_ami=False)
 
 
