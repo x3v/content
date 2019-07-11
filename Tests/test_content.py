@@ -125,7 +125,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
         if not is_mock_run:
             playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
-        notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
+        # notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url, build_name)
 
     succeed = status == PB_Status.COMPLETED or status == PB_Status.NOT_SUPPORTED_VERSION
     return succeed
