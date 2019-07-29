@@ -9,6 +9,7 @@ import json
 import sys
 import os
 import re
+import logging
 from collections import OrderedDict
 
 import xml.etree.cElementTree as ET
@@ -1682,3 +1683,52 @@ def remove_nulls_from_dictionary(dict):
     for key in list_of_keys:
         if dict[key] in ('', None, [], {}, ()):
             del dict[key]
+
+
+class DemistoHandler(logging.Handler):
+    """
+    Handler to route logging messages to demisto.debug
+    """
+    def __init__(self):
+        logging.Handler.__init__(self)
+
+    def emit(self, record):
+        """
+        Emit a record.
+        If a formatter is specified, it is used to format the record.
+        """
+        msg = self.format(record)
+        try:
+            demisto.debug(msg)
+        except Exception:
+            pass
+
+
+class DebugLogger(object):
+    """
+    Wrapper to initiate logging at logging.DEBUG level.
+    Is used when `debug-mode=True`.
+    """
+    def __init__(self, handler):
+        self.root_logger = logging.getLogger()
+        self.prev_log_level = self.root_logger.getEffectiveLevel()
+        self.root_logger.setLevel(logging.DEBUG)
+        self.handler = handler if handler else None
+        if self.handler:
+            self.root_logger.addHandler(self.handler)
+
+    def __del__(self):
+        self.root_logger.setLevel(self.prev_log_level)
+        if self.handler:
+            self.root_logger.removeHandler(self.handler)
+            self.handler.flush()
+            self.handler.close()
+
+
+_requestsLogger = None
+# use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+if hasattr(demisto, 'is_debug') and demisto.is_debug:
+    demistoHandler = DemistoHandler()
+    demistoFormatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+    demistoHandler.setFormatter(demistoFormatter)
+    _requestsLogger = DebugLogger(demistoHandler)
