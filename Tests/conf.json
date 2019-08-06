@@ -1700,6 +1700,10 @@
         {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
+        },
+        {
+            "playbookID": "Request Debugging - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
