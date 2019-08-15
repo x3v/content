@@ -589,7 +589,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                         slack=slack, circle_ci=circle_ci, build_number=build_number, server=server,
                         build_name=build_name, server_numeric_version=server_numeric_version, is_ami=is_ami)
     pool2 = ThreadPool(6)
-    pool2.map(run_test2, mock_tests)
+    pool2.map(run_test2, mockless_tests)
     pool2.close()
     pool2.join()
 
