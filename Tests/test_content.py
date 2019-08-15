@@ -8,6 +8,7 @@ import requests
 from time import sleep
 from datetime import datetime
 from multiprocessing import Pool
+from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 
 import demisto
@@ -558,7 +559,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                             unmockable_integrations=unmockable_integrations, succeed_playbooks=succeed_playbooks,
                             slack=slack, circle_ci=circle_ci, build_number=build_number, server=server,
                             build_name=build_name, server_numeric_version=server_numeric_version)
-        pool1 = Pool(processes=6)
+        pool1 = ThreadPool(6)
         pool1.map(run_test1, mock_tests)
         pool1.close()
         pool1.join()
@@ -587,8 +588,8 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                         unmockable_integrations=unmockable_integrations, succeed_playbooks=succeed_playbooks,
                         slack=slack, circle_ci=circle_ci, build_number=build_number, server=server,
                         build_name=build_name, server_numeric_version=server_numeric_version, is_ami=is_ami)
-    pool2 = Pool(processes=6)
-    pool2.map(run_test2, mockless_tests)
+    pool2 = ThreadPool(6)
+    pool2.map(run_test2, mock_tests)
     pool2.close()
     pool2.join()
 
