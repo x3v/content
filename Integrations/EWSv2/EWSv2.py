@@ -1703,7 +1703,7 @@ def main():
         # Office365 regular maintenance case
         if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) \
                 and 'outlook.office365.com' in EWS_SERVER:
-            log_message = "Office365 is undergoing load balancing operations. " \
+            log_message = "Office365 is  load balancing operations. " \
                           "As a result, the service is temporarily unavailable."
             if demisto.command() == 'fetch-incidents':
                 demisto.info(log_message)
@@ -1731,7 +1731,7 @@ def main():
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
-            error_message_simple = "Got unauthorized from the server. " \
+            error_message_simple = "Got  from the server. " \
                                    "Check credentials are correct and authentication method are supported. "
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
@@ -1739,7 +1739,7 @@ def main():
         if "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
                                    "Probably the server is not reachable with the current settings. " \
-                                   "Check proxy parameter. If you are using server URL - change to server IP address. "
+                                   "Check proxy . If you are using server URL - change to server IP address. "
 
         if not error_message_simple:
             error_message = error_message_simple = str(e.message)
