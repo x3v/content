@@ -7,6 +7,8 @@ import argparse
 import requests
 from time import sleep
 from datetime import datetime
+from multiprocessing import Pool
+from functools import partial
 
 import demisto
 from slackclient import SlackClient
@@ -19,7 +21,7 @@ from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
@@ -538,13 +540,28 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
-        for t in mock_tests:
-            run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                              skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                              is_filter_configured,
-                              filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-                              unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                              build_name, server_numeric_version)
+        # for t in mock_tests:
+        #     run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+        #                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
+        #                       is_filter_configured,
+        #                       filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
+        #                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
+        #                       build_name, server_numeric_version)
+
+        run_test1 = partial(run_test_scenario, c=c, proxy=proxy, default_test_timeout=default_test_timeout,
+                            skipped_tests_conf=skipped_tests_conf, nightly_integrations=nightly_integrations,
+                            skipped_integrations_conf=skipped_integrations_conf,
+                            skipped_integration=skipped_integration, is_nightly=is_nightly, run_all_tests=run_all_tests,
+                            is_filter_configured=is_filter_configured,
+                            filtered_tests=filtered_tests, skipped_tests=skipped_tests, demisto_api_key=demisto_api_key,
+                            secret_params=secret_params, failed_playbooks=failed_playbooks,
+                            unmockable_integrations=unmockable_integrations, succeed_playbooks=succeed_playbooks,
+                            slack=slack, circle_ci=circle_ci, build_number=build_number, server=server,
+                            build_name=build_name, server_numeric_version=server_numeric_version)
+        pool1 = Pool(processes=6)
+        pool1.map(run_test1, mock_tests)
+        pool1.close()
+        pool1.join()
 
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto('')
@@ -552,13 +569,28 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         restart_demisto_service(ami, c)
         print("Demisto service restarted\n")
 
-    for t in mockless_tests:
-        run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                          skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                          is_filter_configured,
-                          filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-                          unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                          build_name, server_numeric_version, is_ami)
+    # for t in mockless_tests:
+    #     run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+    #                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
+    #                       is_filter_configured,
+    #                       filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
+    #                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
+    #                       build_name, server_numeric_version, is_ami)
+
+    run_test2 = partial(run_test_scenario, c=c, proxy=proxy, default_test_timeout=default_test_timeout,
+                        skipped_tests_conf=skipped_tests_conf, nightly_integrations=nightly_integrations,
+                        skipped_integrations_conf=skipped_integrations_conf, skipped_integration=skipped_integration,
+                        is_nightly=is_nightly, run_all_tests=run_all_tests,
+                        is_filter_configured=is_filter_configured,
+                        filtered_tests=filtered_tests, skipped_tests=skipped_tests, demisto_api_key=demisto_api_key,
+                        secret_params=secret_params, failed_playbooks=failed_playbooks,
+                        unmockable_integrations=unmockable_integrations, succeed_playbooks=succeed_playbooks,
+                        slack=slack, circle_ci=circle_ci, build_number=build_number, server=server,
+                        build_name=build_name, server_numeric_version=server_numeric_version, is_ami=is_ami)
+    pool2 = Pool(processes=6)
+    pool2.map(run_test2, mockless_tests)
+    pool2.close()
+    pool2.join()
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
                        proxy, is_ami)
